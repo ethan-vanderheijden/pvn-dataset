@@ -1,6 +1,6 @@
 ## Torrents for testing the bittorrent_offload PVN app
 
-This folder contains a collection of torrents for testing the bittorrent_offload PVN app. All torrents are non-copyrighted and obtained through sources such as Internet Archive, Academic Torrents, Linux distros, etc. Additionally, we tried to get a mixture of different torrent types, so some are large single files while others are collections of many small files. We tried to find popular, well-seeded torrents. All torrents are smaller than a few GB, and some were trimmed down to fit the size limit.
+This folder contains a collection of real-world torrents for testing the bittorrent_offload PVN app. All torrents are non-copyrighted and obtained through reputable sources such as Academic Torrents, Linux distros, etc. Additionally, we tried to get a mixture of different torrent types, so some are large single files while others are collections of many small files. All torrents are between 100 MB and 1 GB in size and should be well-seeded.
 
 ### Torrents:
 1. [The Oxford-IIIT Pet Dataset](https://academictorrents.com/details/b18bbd9ba03d50b0f7f479acc9f4228a408cecc1) | via Academic Torrents | 811.09 MB, 2 files
@@ -22,5 +22,3 @@ This folder contains a collection of torrents for testing the bittorrent_offload
 17. [Syd Barrett HYGIY](https://bt.etree.org/details.php?torrentId=623381) | via etree.org | 696.11 MB, 66 files
 18. [Alaska National Land Coverage Dataset 2011](https://climate.daknob.net/) | via Climate Mirror Project | 242.82 MB, 1 file
 19. [Alaska NLCD USFS Tree Canopy Dataset 2011](https://climate.daknob.net/) | via Climate Mirror Project | 85.4 MB, 1 file
-20. Night of the Living Dead | via 1337x.to (but this movie is public domain) | 790.42 MB, 1 file
-21. The Little Shop of Horrors | via 1337x.to (but this movie is public domain) | 1.1 GB, 1 file
