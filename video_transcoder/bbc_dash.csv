@@ -1,0 +1,32 @@
+# Note: BBC videos are protected by generated keys valid for 24 hours.
+# Must make a GET request to these URLs and find a DASH connection variant for a fresh URL.
+bbc_videos
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0lq0nh5/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0lm6vfb/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0lh67lg/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0lfvw93/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0ldjbq8/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0l9pjss/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0l88cwq/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0l2wd3l/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0l5k5wd/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0kx765f/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0kymp79/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0l00lrp/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0kwrcsg/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0krmpbs/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0lc34s8/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0ks7cdw/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0kq7z60/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0kktcry/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0kj9vr5/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0kgvfdg/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0kfrngh/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0kcbcq9/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0kdrl17/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0k9srhb/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0k89329/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0k6r1mz/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0jny9tc/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0jz0t43/format/json/cors/1
+https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/p0jxll4l/format/json/cors/1
