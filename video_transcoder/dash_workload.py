@@ -5,6 +5,10 @@ import requests
 import pandas as pd
 import subprocess
 
+if len(sys.argv) != 2:
+    print("Usage: python3 dash_workload.py <proxy_address>")
+    sys.exit(1)
+
 endpoints = pd.read_csv("bbc_dash.csv", comment="#")["bbc_videos"]
 
 
