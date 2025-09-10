@@ -5,6 +5,7 @@ import pandas as pd
 import random
 import time
 import ssl
+import sys
 
 data = pd.read_csv("output/combined.csv")
 trace_id = random.choice(data["trace"].unique())
@@ -41,14 +42,18 @@ async def tls_connect(domain):
         print(f"Error connecting to {domain}: {e}")
 
 
-async def main():
+async def main(override_domains=None):
     start = time.time()
     for _, row in traces.iterrows():
         diff = row["timestamp"] - (time.time() - start)
         if diff > 0:
             print("Sleeping for", diff)
             await asyncio.sleep(diff)
-        spawn_task(tls_connect(row["url"]))
+        domain = row["url"]
+        if override_domains:
+            domain = random.choice(override_domains)
+        spawn_task(tls_connect(domain))
 
 
-asyncio.run(main())
+override_domains = sys.argv[1:] if len(sys.argv) > 1 else None
+asyncio.run(main(override_domains))
