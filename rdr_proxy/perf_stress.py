@@ -4,7 +4,6 @@ import asyncio
 import aiohttp
 import argparse
 import time
-import sys
 
 parser = argparse.ArgumentParser(
     description="Drives RDR parent cache desired rate."
