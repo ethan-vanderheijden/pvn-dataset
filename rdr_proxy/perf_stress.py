@@ -24,7 +24,7 @@ def spawn_task(coro):
 
 
 async def make_conn(session):
-    async with session.get(args.dest_url, proxy=f"http://{args.client_cache}") as response:
+    async with session.get(args.dest_url, proxy=f"http://{args.client_cache}", verify_ssl=False) as response:
         await response.read()
 
 
