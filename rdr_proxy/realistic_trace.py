@@ -11,10 +11,6 @@ parser = argparse.ArgumentParser(description="Simulates a realistic web browsing
 parser.add_argument("proxy", type=str, help="Proxy server address to send requests through")
 args = parser.parse_args()
 
-data = pd.read_csv("output/traces.csv")
-trace_id = random.choices(data["trace"].unique())
-trace = data[data["trace"] == trace_id[0]].sort_values("used_at")
-
 _tasks = set()
 
 
@@ -45,4 +41,10 @@ async def main():
 
 
 if __name__ == "__main__":
+    data = pd.read_csv("output/traces.csv")
+    trace_id = random.choices(data["trace"].unique())
+    trace = data[data["trace"] == trace_id[0]].sort_values("used_at")
+
+    print("Simulating trace:", trace_id[0])
+
     asyncio.run(main())
