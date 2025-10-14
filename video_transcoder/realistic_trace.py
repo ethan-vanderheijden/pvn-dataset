@@ -2,6 +2,8 @@
 
 import sys
 import requests
+import random
+import time
 import pandas as pd
 import subprocess
 
@@ -32,12 +34,23 @@ def extract_dash_url(endpoint):
         return None
 
 
-endpoint = endpoints.sample(1).iloc[0]
-print(f"Selected endpoint: {endpoint}")
-dash_url = extract_dash_url(endpoint)
-print(f"DASH URL: {dash_url if dash_url else 'No DASH URL found'}")
+while True:
+    endpoint = endpoints.sample(1).iloc[0]
+    print(f"Selected endpoint: {endpoint}")
+    dash_url = extract_dash_url(endpoint)
+    print(f"DASH URL: {dash_url if dash_url else 'No DASH URL found'}")
 
-subprocess.run(
-    ["xvfb-run", "dbus-run-session", "cvlc", "--no-audio", dash_url],
-    env={"http_proxy": "http://" + sys.argv[1]},
-)
+    # random runtime up to 0.5 to 5 minutes
+    runtime = random.randint(30, 300)
+    print(f"Running for up to {runtime} seconds")
+
+    process = subprocess.Popen(
+        ["xvfb-run", "dbus-run-session", "cvlc", "--no-audio", dash_url],
+        env={"http_proxy": "http://" + sys.argv[1]},
+    )
+
+    process.wait(timeout=runtime)
+
+    sleep_time = random.randint(45, 120)
+    print(f"Sleeping for {sleep_time} seconds before next video")
+    time.sleep(sleep_time)
