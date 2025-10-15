@@ -1,15 +1,25 @@
 #!/usr/bin/env python3
 
-import sys
+import argparse
 import requests
 import random
 import time
+import psutil
+import os
+import signal
 import pandas as pd
 import subprocess
 
-if len(sys.argv) != 2:
-    print("Usage: python3 dash_workload.py <proxy_address>")
-    sys.exit(1)
+MIN_SLEEP_TIME = 30
+MAX_SLEEP_TIME = 180
+MIN_PLAY_TIME = 30
+MAX_PLAY_TIME = 90
+MIN_PAUSE_TIME = 10
+MAX_PAUSE_TIME = 45
+
+parser = argparse.ArgumentParser(description="Drives video transcoder with real DASH videos and random pauses.")
+parser.add_argument("proxy_address", type=str, help="Address of the HTTP proxy to use")
+args = parser.parse_args()
 
 endpoints = pd.read_csv("bbc_dash.csv", comment="#")["bbc_videos"]
 
@@ -40,17 +50,44 @@ while True:
     dash_url = extract_dash_url(endpoint)
     print(f"DASH URL: {dash_url if dash_url else 'No DASH URL found'}")
 
-    # random runtime up to 0.5 to 5 minutes
-    runtime = random.randint(30, 300)
-    print(f"Running for up to {runtime} seconds")
-
     process = subprocess.Popen(
         ["xvfb-run", "dbus-run-session", "cvlc", "--no-audio", dash_url],
-        env={"http_proxy": "http://" + sys.argv[1]},
+        env={"http_proxy": "http://" + args.proxy_address},
     )
 
-    process.wait(timeout=runtime)
+    time_until_pause = random.randint(MIN_PAUSE_TIME, MAX_PAUSE_TIME)
+    print(f"Playing video for up to {time_until_pause} seconds")
 
-    sleep_time = random.randint(45, 120)
-    print(f"Sleeping for {sleep_time} seconds before next video")
+    # give VLC some time to start
+    time.sleep(5)
+    time_until_pause -= 5
+
+    vlc_pid = None
+    for child in psutil.Process(process.pid).children(recursive=True):
+        executable = child.exe()
+        if executable.split("/")[-1] == "vlc":
+            vlc_pid = child.pid
+            print(f"VLC PID: {vlc_pid}")
+
+    if vlc_pid is None:
+        print("VLC process not found, terminating.")
+        process.terminate()
+        process.wait()
+        break
+
+    while process.poll() is None:
+        if time_until_pause <= 0:
+            os.kill(vlc_pid, signal.SIGSTOP)
+            pause_time = random.randint(MIN_PAUSE_TIME, MAX_PAUSE_TIME)
+            print(f"Pausing video for {pause_time} seconds")
+            time.sleep(pause_time)
+            os.kill(vlc_pid, signal.SIGCONT)
+            time_until_pause = random.randint(MIN_PAUSE_TIME, MAX_PAUSE_TIME)
+            print(f"Resuming video for up to {time_until_pause} seconds")
+        else:
+            time_until_pause -= 1
+            time.sleep(1)
+
+    sleep_time = random.randint(MIN_SLEEP_TIME, MAX_SLEEP_TIME)
+    print(f"Waiting {sleep_time} seconds before next video")
     time.sleep(sleep_time)
