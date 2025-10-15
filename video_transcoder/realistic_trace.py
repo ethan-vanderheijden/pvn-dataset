@@ -10,8 +10,6 @@ import signal
 import pandas as pd
 import subprocess
 
-MIN_SLEEP_TIME = 30
-MAX_SLEEP_TIME = 180
 MIN_PLAY_TIME = 30
 MAX_PLAY_TIME = 90
 MIN_PAUSE_TIME = 10
@@ -44,37 +42,35 @@ def extract_dash_url(endpoint):
         return None
 
 
-while True:
-    endpoint = endpoints.sample(1).iloc[0]
-    print(f"Selected endpoint: {endpoint}")
-    dash_url = extract_dash_url(endpoint)
-    print(f"DASH URL: {dash_url if dash_url else 'No DASH URL found'}")
+endpoint = endpoints.sample(1).iloc[0]
+print(f"Selected endpoint: {endpoint}")
+dash_url = extract_dash_url(endpoint)
+print(f"DASH URL: {dash_url if dash_url else 'No DASH URL found'}")
 
-    process = subprocess.Popen(
-        ["xvfb-run", "dbus-run-session", "cvlc", "--no-audio", dash_url],
-        env={"http_proxy": "http://" + args.proxy_address},
-    )
+process = subprocess.Popen(
+    ["xvfb-run", "dbus-run-session", "cvlc", "--no-audio", dash_url],
+    env={"http_proxy": "http://" + args.proxy_address},
+)
 
-    time_until_pause = random.randint(MIN_PAUSE_TIME, MAX_PAUSE_TIME)
-    print(f"Playing video for up to {time_until_pause} seconds")
+time_until_pause = random.randint(MIN_PAUSE_TIME, MAX_PAUSE_TIME)
+print(f"Playing video for up to {time_until_pause} seconds")
 
-    # give VLC some time to start
-    time.sleep(5)
-    time_until_pause -= 5
+# give VLC some time to start
+time.sleep(5)
+time_until_pause -= 5
 
-    vlc_pid = None
-    for child in psutil.Process(process.pid).children(recursive=True):
-        executable = child.exe()
-        if executable.split("/")[-1] == "vlc":
-            vlc_pid = child.pid
-            print(f"VLC PID: {vlc_pid}")
+vlc_pid = None
+for child in psutil.Process(process.pid).children(recursive=True):
+    executable = child.exe()
+    if executable.split("/")[-1] == "vlc":
+        vlc_pid = child.pid
+        print(f"VLC PID: {vlc_pid}")
 
-    if vlc_pid is None:
-        print("VLC process not found, terminating.")
-        process.terminate()
-        process.wait()
-        break
-
+if vlc_pid is None:
+    print("VLC process not found, terminating.")
+    process.terminate()
+    process.wait()
+else:
     while process.poll() is None:
         if time_until_pause <= 0:
             os.kill(vlc_pid, signal.SIGSTOP)
@@ -87,7 +83,3 @@ while True:
         else:
             time_until_pause -= 1
             time.sleep(1)
-
-    sleep_time = random.randint(MIN_SLEEP_TIME, MAX_SLEEP_TIME)
-    print(f"Waiting {sleep_time} seconds before next video")
-    time.sleep(sleep_time)
