@@ -9,6 +9,7 @@ import pandas as pd
 
 parser = argparse.ArgumentParser(description="Simulates a realistic web browsing workload.")
 parser.add_argument("proxy", type=str, help="Proxy server address to send requests through")
+parser.add_argument("--traces", type=int, default=1, help="Number of traces to simulate simultaneously")
 args = parser.parse_args()
 
 _tasks = set()
@@ -42,9 +43,9 @@ async def main():
 
 if __name__ == "__main__":
     data = pd.read_csv("output/traces.csv")
-    trace_id = random.choices(data["trace"].unique())
-    trace = data[data["trace"] == trace_id[0]].sort_values("used_at")
+    trace_ids = random.choices(data["trace"].unique(), k=args.traces)
+    trace = data[data["trace"].isin(trace_ids)].sort_values("used_at")
 
-    print("Simulating trace:", trace_id[0])
+    print(f"Simulating {args.traces} traces with total {len(trace)} requests")
 
     asyncio.run(main())
