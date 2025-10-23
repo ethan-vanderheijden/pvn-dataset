@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser(
     description="Measures and reports system-wide and cgroup CPU utilization."
 )
 parser.add_argument(
-    "-i", "--interval", type=int, default=5, help="Interval in milliseconds between measurements"
+    "-i", "--interval", type=int, default=500, help="Interval in milliseconds between measurements"
 )
 parser.add_argument("-c", "--cgroup", nargs="+", default=[], help="Cgroup paths to monitor")
 args = parser.parse_args()

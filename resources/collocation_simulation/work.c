@@ -4,9 +4,9 @@
 #include <time.h>
 
 // 3 seconds in milliseconds
-#define EPOCH 900
+#define EPOCH 1200
 // jobs for epoch arrive in 10 batches
-#define EPOCH_SEGMENTS 3
+#define EPOCH_SEGMENTS 4
 // each iteration of do_work() will take approximately 3 milliseconds
 #define ITERATION_TIME 3
 
@@ -103,11 +103,11 @@ int random_range(int min, int max) {
 }
 
 int sample_utilization(utilization_t* util) {
-    int r = random_range(1, util->total_weight - 1);
+    int r = random_range(1, util->total_weight);
     int cumulative = 0;
     for (int i = 0; i < 100 / util->bucket_size; i++) {
         cumulative += util->buckets[i];
-        if (r < cumulative) {
+        if (r <= cumulative) {
             return i * util->bucket_size + (util->bucket_size + 1) / 2;
         }
     }
