@@ -7,7 +7,7 @@ import sys
 import os
 
 parser = argparse.ArgumentParser(
-    description="Measures and reports system-wide resource utilization."
+    description="Measures and reports system-wide and cgroup resource utilization."
 )
 parser.add_argument("disk", type=str, help="Disk device to monitor (e.g., sda1)")
 parser.add_argument(
