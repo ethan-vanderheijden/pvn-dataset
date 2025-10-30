@@ -1,23 +1,31 @@
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/random.h>
 #include <time.h>
+#include <unistd.h>
 
 // 3 seconds in milliseconds
 #define EPOCH 1200
-// jobs for epoch arrive in 10 batches
+// jobs for epoch arrive in 4 batches
 #define EPOCH_SEGMENTS 4
 // each iteration of do_work() will take approximately 3 milliseconds
 #define ITERATION_TIME 3
 
 char help[] =
-    "Simulates a program that does work and sleeps for a fixed period of time every epoch (3 "
-    "seconds).\n"
-    "Usage: ./work <tuning> <utilization_histogram>\n"
+    "Simulates a program that does work and sleeps for a fixed period of time every epoch.\n"
+    "Prints average number of carried over iterations per epoch to stdout.\n"
+    "Usage: ./work [-e epoch] [-h] <tuning> <utilization_histogram>\n"
+    "  -h                       Show this help message and exit.\n"
+    "  -e <epoch>               Stop after this many epochs (Default: 0 to run forever).\n"
     "  <tuning>                 Number of iterations to perform in each epoch. Set this such that "
-    "each "
-    "run takes exactly 3ms.\n"
+    "each run takes exactly 3ms.\n"
     "  <utilization_histogram>  Path to description of utilization histogram to sample from.\n";
+
+volatile int done = 0;
+
+static void handle_signal(int sig) { done = 1; }
 
 static inline int utilization_to_iterations(int cpu_utilization) {
     return (cpu_utilization * EPOCH) / (EPOCH_SEGMENTS * 100 * ITERATION_TIME);
@@ -115,27 +123,56 @@ int sample_utilization(utilization_t* util) {
 }
 
 int main(int argc, char* argv[]) {
-    srand(time(NULL));
+    int max_epochs = 0;
+    int opt;
+    while ((opt = getopt(argc, argv, "he:")) != -1) {
+        switch (opt) {
+            case 'e':
+                max_epochs = atoi(optarg);
+                break;
+            default:
+                printf("%s", help);
+                return opt != 'h';
+        }
+    }
 
-    if (argc != 3) {
+    if (argc - optind != 2) {
         printf("%s", help);
         return 1;
     }
 
+    int rand_seed;
+    if (getrandom(&rand_seed, sizeof(rand_seed), 0) != sizeof(rand_seed)) {
+        perror("Failed to get random seed");
+        return 1;
+    }
+    srand(rand_seed);
+
     utilization_t util;
-    if (read_histogram(argv[2], &util) != 0) {
+    if (read_histogram(argv[optind + 1], &util) != 0) {
         return 1;
     }
 
-    int tuning = atoi(argv[1]);
+    signal(SIGINT, handle_signal);
+    signal(SIGTERM, handle_signal);
+
+    int tuning = atoi(argv[optind]);
     int iterations = 0;
     int epoch = 0;
-    while (1) {
-        epoch++;
+
+    unsigned int carried_over_epochs = 0;
+    unsigned long long total_carried_over = 0;
+
+outer:
+    while (!done && (max_epochs == 0 || epoch < max_epochs)) {
         int cpu_utilization = sample_utilization(&util);
-        printf("Epoch %d: utilization %d\n", epoch, cpu_utilization);
+        printf("Epoch %d: utilization %d\n", epoch + 1, cpu_utilization);
 
         for (int i = 0; i < EPOCH_SEGMENTS; i++) {
+            if (done) {
+                break outer;
+            }
+
             int new_iterations = utilization_to_iterations(cpu_utilization);
             printf("  Segment %d: adding %d iterations (total %d)\n", i + 1, new_iterations,
                    iterations + new_iterations);
@@ -147,6 +184,10 @@ int main(int argc, char* argv[]) {
             struct timespec cur_time;
             unsigned long long elapsed_ns;
             for (; iterations > 0; iterations--) {
+                if (done) {
+                    break outer;
+                }
+
                 do_work(tuning);
                 clock_gettime(CLOCK_MONOTONIC, &cur_time);
                 elapsed_ns = (cur_time.tv_sec - start.tv_sec) * 1000000000ULL +
@@ -158,8 +199,7 @@ int main(int argc, char* argv[]) {
 
             if (iterations == 0) {
                 printf("  Finished segment %d early, sleeping...\n", i + 1);
-                unsigned long long sleep_ns =
-                    (EPOCH / EPOCH_SEGMENTS) * 1000000ULL - elapsed_ns;
+                unsigned long long sleep_ns = (EPOCH / EPOCH_SEGMENTS) * 1000000ULL - elapsed_ns;
                 struct timespec sleep_time;
                 sleep_time.tv_sec = sleep_ns / 1000000000ULL;
                 sleep_time.tv_nsec = sleep_ns % 1000000000ULL;
@@ -168,7 +208,16 @@ int main(int argc, char* argv[]) {
                 printf("  Segment %d: leftover iterations %d\n", i + 1, iterations);
             }
         }
+
+        epoch++;
+        if (iterations > 0) {
+            carried_over_epochs++;
+            total_carried_over += iterations;
+        }
     }
 
+    printf("Carry over frequency: %.2f%%, average carry over: %.2f\n",
+           (carried_over_epochs * 100.0) / epoch,
+           carried_over_epochs ? (total_carried_over * 1.0) / carried_over_epochs : 0.0);
     return 0;
 }
